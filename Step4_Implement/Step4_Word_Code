@@ -1,0 +1,40 @@
+// Start system
+START
+    Load feeding times
+    Check sensors and motor
+    System ready
+
+// Main loop
+WHILE system is ON DO
+    currentTime = ReadClock()
+    
+    // Step 1: Is it feeding time?
+    IF currentTime == feedingTime THEN
+        
+        // Step 2: Check if food is available
+        IF FoodBin == Empty THEN
+            SendAlert("Food bin empty")
+        ELSE
+            // Step 3: Dispense food
+            DispensePortion(targetAmount)
+            bowlWeight = MeasureBowl()
+            
+            // Step 4: Check if portion was dispensed
+            IF bowlWeight < targetAmount THEN
+                SendAlert("Dispense error")
+            ELSE
+                // Step 5: Monitor eating for 10 minutes
+                Wait(10 minutes)
+                newWeight = MeasureBowl()
+                
+                IF newWeight < bowlWeight THEN
+                    Log("Pet has eaten")
+                ELSE
+                    SendAlert("Food not eaten")
+                ENDIF
+            ENDIF
+        ENDIF
+    ENDIF
+    
+    Wait(1 minute)  // Repeat loop
+ENDWHILE
